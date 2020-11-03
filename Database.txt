@@ -1,0 +1,561 @@
+
+
+CREATE PROCEDURE [dbo].[Sp_Customer]
+@CustomerId int =0,
+@OrderId int =0,
+@action nvarchar(50) = ''
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+    DECLARE @ErrorMessage nvarchar(max) = ''
+
+    IF (ISNULL(@action, '') = NULL)
+        OR (@action IS NULL)
+    BEGIN
+        
+        Set @ErrorMessage = 'action is null';
+        
+        RAISERROR (@ErrorMessage, 15, 1)
+  END
+  ELSE
+  BEGIN
+         IF @action = 'RetrieveCustomerDetails'
+        BEGIN
+	           IF 
+				 (ISNUMERIC(@CustomerId) = 0)
+                OR (CONVERT(nvarchar(50), @CustomerId) = '0')
+                OR (@CustomerId IS NULL)
+				
+				          
+            BEGIN TRY
+                
+            SET @ErrorMessage = 'input parameter is null'
+                
+                RAISERROR (@ErrorMessage, 15, 1)
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+			 BEGIN TRY 
+
+				select * from [dbo].[Customers] where [Customers].Id=@CustomerId
+			
+			
+	  END TRY
+	  BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+
+		 IF @action = 'RetrieveOrdersbyCustomerId'
+        BEGIN
+	           IF 
+				 (ISNUMERIC(@CustomerId) = 0)
+                OR (CONVERT(nvarchar(50), @CustomerId) = '0')
+                OR (@CustomerId IS NULL)
+				
+				          
+            BEGIN TRY
+                
+            SET @ErrorMessage = 'input parameter is null'
+                
+                RAISERROR (@ErrorMessage, 15, 1)
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+			 BEGIN TRY 
+
+				select * from [dbo].[Orders] where [Orders].Customer_Id=@CustomerId
+			
+			
+	  END TRY
+	  BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+
+			 IF @action = 'RetrieveOrderDetailsbyOrderId'
+        BEGIN
+	           IF 
+				 (ISNUMERIC(@OrderId) = 0)
+                OR (CONVERT(nvarchar(50), @OrderId) = '0')
+                OR (@OrderId IS NULL)
+				
+				          
+            BEGIN TRY
+                
+            SET @ErrorMessage = 'input parameter is null'
+                
+                RAISERROR (@ErrorMessage, 15, 1)
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+			 BEGIN TRY 
+
+				select *,
+				(Select [Name] from [dbo].[Products] where [OrderDetails].ProductId=[Products].Id) as Name
+				 from [dbo].[OrderDetails] where [OrderDetails].OrderId=@OrderId
+			
+			
+	  END TRY
+	  BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+
+
+		END
+		END
+
+GO
+/****** Object:  StoredProcedure [dbo].[Sp_Products]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[Sp_Products]
+@id int =0,
+@Name nvarchar(256)='',
+@Description nvarchar(512)='',
+@ItemCount int=0,
+@ItemPrice money=0,
+@AvailabilityStatus int=0,
+@ProductTypeId int =0,
+@UpdateDate datetime='',
+@Search nvarchar(64)='',
+@action nvarchar(50) = ''
+AS
+BEGIN
+
+    SET NOCOUNT ON;
+    DECLARE @ErrorMessage nvarchar(max) = ''
+
+    IF (ISNULL(@action, '') = NULL)
+        OR (@action IS NULL)
+    BEGIN
+        
+        Set @ErrorMessage = 'action is null';
+        
+        RAISERROR (@ErrorMessage, 15, 1)
+  END
+  ELSE
+  BEGIN
+         IF @action = 'insert'
+        BEGIN
+	           IF (@Name IS NULL)
+			    OR  (@Description is null)
+				OR (ISNUMERIC(@ItemCount) = 0)
+                OR (CONVERT(nvarchar(50), @ItemCount) = '0')
+                OR (@ItemCount IS NULL)
+				OR (ISNUMERIC(@ItemPrice) = 0)
+                OR (CONVERT(nvarchar(50), @ItemPrice) = '0')
+                OR (@ItemPrice IS NULL)
+				
+				OR (ISNUMERIC(@ProductTypeId) = 0)
+                OR (CONVERT(nvarchar(50), @ProductTypeId) = '0')
+                OR (@ProductTypeId IS NULL)
+				          
+            BEGIN TRY
+                
+            SET @ErrorMessage = 'input parameter is null'
+                
+                RAISERROR (@ErrorMessage, 15, 1)
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+			 BEGIN TRY 
+
+		INSERT INTO [dbo].[Products]
+			(
+			[Name],
+			[Description],
+			[ItemCount],
+			[ItemPrice],
+			[AvailabilityStatus],
+			[ProductTypeId])
+			
+			 VALUES(
+			 @Name,
+			 @Description,
+			 @ItemCount,
+			 @ItemPrice,
+			@AvailabilityStatus,
+			@ProductTypeId
+			
+			 )
+	  END TRY
+	  BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+
+
+		   IF @action = 'update'
+        BEGIN
+	           IF (ISNUMERIC(@Id) = 0)
+                OR (CONVERT(nvarchar(50), @Id) = '0')
+                OR (@Id IS NULL)
+			    OR (@Name IS NULL)
+			    OR  (@Description is null)
+				OR (ISNUMERIC(@ItemCount) = 0)
+                OR (CONVERT(nvarchar(50), @ItemCount) = '0')
+                OR (@ItemCount IS NULL)
+				OR (ISNUMERIC(@ItemPrice) = 0)
+                OR (CONVERT(nvarchar(50), @ItemPrice) = '0')
+                OR (@ItemPrice IS NULL)
+				
+				OR (ISNUMERIC(@ProductTypeId) = 0)
+                OR (CONVERT(nvarchar(50), @ProductTypeId) = '0')
+                OR (@ProductTypeId IS NULL)
+				          
+            BEGIN TRY
+                
+            SET @ErrorMessage = 'input parameter is null'
+                
+                RAISERROR (@ErrorMessage, 15, 1)
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+			 BEGIN TRY 
+
+		  UPDATE [dbo].[Products]
+
+
+		  SET [Name]=@Name,
+		  [Description]=@Description,
+		  [ItemCount]=@ItemCount,
+		  [ItemPrice]=@ItemPrice,
+		  [AvailabilityStatus]=@AvailabilityStatus,
+		  [ProductTypeId]=@ProductTypeId,
+		  [UpdateDate]=getdate()
+			WHERE [Products].Id=@id
+			
+			
+	  END TRY
+	  BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+		
+		IF @action = 'selectallproducts'
+        BEGIN
+		 BEGIN TRY
+		SELECT  *  ,
+		(select [Name] from [dbo].[ProductsType] where [ProductsType].Id = [Products].[ProductTypeId]) as ProductTypeName
+		
+		FROM [dbo].[Products]
+		 order by [Products].[Id] desc
+  END TRY
+      BEGIN CATCH
+        SELECT
+          @ErrorMessage = ERROR_MESSAGE()
+        RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+
+		 IF @action = 'selectproductbyId'
+        BEGIN
+            IF (ISNUMERIC(@id) = 0)
+                OR (CONVERT(nvarchar(50), @id) = '0')
+                OR (@id IS NULL)
+            BEGIN TRY SET @ErrorMessage = 'input parameter is null'
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+            BEGIN TRY
+
+                select * from Products where Products.Id=@id
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+        END
+
+		 IF @action = 'selectproductbySearch'
+        BEGIN
+            IF (@Search IS NULL)
+            BEGIN TRY SET @ErrorMessage = 'input parameter is null'
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+            BEGIN TRY
+
+                select *,
+				(select [Name] from [dbo].[ProductsType] where [ProductsType].Id = [Products].[ProductTypeId]) as ProductTypeName
+				 from Products  WHERE  Products.Name LIKE '%' + @Search + '%' 
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+        END
+
+
+		 IF @action = 'delete'
+        BEGIN
+            IF (ISNUMERIC(@id) = 0)
+                OR (CONVERT(nvarchar(50), @id) = '0')
+                OR (@id IS NULL)
+            BEGIN TRY SET @ErrorMessage = 'input parameter is null'
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+            ELSE
+            BEGIN TRY
+
+                DELETE FROM [dbo].[Products] WHERE id = @id
+            END TRY
+            BEGIN CATCH
+                SELECT
+                    @ErrorMessage = ERROR_MESSAGE()
+                RAISERROR (@ErrorMessage, 15, 1)
+            END CATCH
+        END
+
+
+		-- IF @action = 'selectalldesignastion'
+  --      BEGIN
+		-- BEGIN TRY
+		--SELECT  * FROM [dbo].[Designation]
+		-- order by [DesignationId] asc
+  --END TRY
+  --    BEGIN CATCH
+  --      SELECT
+  --        @ErrorMessage = ERROR_MESSAGE()
+  --      RAISERROR (@ErrorMessage, 15, 1)
+  --    END CATCH
+		--END
+
+		 IF @action = 'selectallProductsTpe'
+        BEGIN
+		 BEGIN TRY
+		SELECT  * FROM [dbo].[ProductsType]
+		 order by id asc
+  END TRY
+      BEGIN CATCH
+        SELECT
+          @ErrorMessage = ERROR_MESSAGE()
+        RAISERROR (@ErrorMessage, 15, 1)
+      END CATCH
+		END
+		END
+		END
+
+GO
+/****** Object:  Table [dbo].[Customers]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Customers](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
+	[Email] [nvarchar](32) NOT NULL,
+	[birtdate] [datetime] NOT NULL,
+ CONSTRAINT [PK_Customers] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[OrderDetails]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OrderDetails](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Price] [money] NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[Total] [money] NOT NULL,
+	[OrderId] [int] NOT NULL,
+	[ProductId] [int] NOT NULL,
+ CONSTRAINT [PK_OrderDetails] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Orders]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Orders](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[OrderNumber] [nvarchar](32) NOT NULL,
+	[OrderDate] [datetime] NOT NULL,
+	[Customer_Id] [int] NOT NULL,
+ CONSTRAINT [PK_Orders] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[Products]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Products](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
+	[Description] [nvarchar](512) NOT NULL,
+	[ItemCount] [int] NOT NULL,
+	[ItemPrice] [money] NOT NULL,
+	[AvailabilityStatus] [int] NOT NULL,
+	[ProductTypeId] [int] NOT NULL,
+	[EntryDate] [datetime] NOT NULL,
+	[UpdateDate] [datetime] NULL,
+ CONSTRAINT [PK_Products] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[ProductsType]    Script Date: 11/3/2020 9:49:10 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProductsType](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
+	[Description] [nvarchar](512) NOT NULL,
+	[EntryDate] [datetime] NOT NULL,
+ CONSTRAINT [PK_ProductsType] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET IDENTITY_INSERT [dbo].[Customers] ON 
+
+GO
+INSERT [dbo].[Customers] ([Id], [Name], [Email], [birtdate]) VALUES (1, N'Mohamed Ashique', N'ashiquem01@gmail.com', CAST(0x000082B600000000 AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[Customers] OFF
+GO
+SET IDENTITY_INSERT [dbo].[OrderDetails] ON 
+
+GO
+INSERT [dbo].[OrderDetails] ([Id], [Price], [Quantity], [Total], [OrderId], [ProductId]) VALUES (1, 2500.0000, 2, 5000.0000, 1, 13)
+GO
+INSERT [dbo].[OrderDetails] ([Id], [Price], [Quantity], [Total], [OrderId], [ProductId]) VALUES (2, 3000.0000, 1, 3000.0000, 1, 14)
+GO
+INSERT [dbo].[OrderDetails] ([Id], [Price], [Quantity], [Total], [OrderId], [ProductId]) VALUES (3, 3000.0000, 1, 3000.0000, 2, 14)
+GO
+INSERT [dbo].[OrderDetails] ([Id], [Price], [Quantity], [Total], [OrderId], [ProductId]) VALUES (6, 2500.0000, 1, 2500.0000, 2, 13)
+GO
+SET IDENTITY_INSERT [dbo].[OrderDetails] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Orders] ON 
+
+GO
+INSERT [dbo].[Orders] ([Id], [OrderNumber], [OrderDate], [Customer_Id]) VALUES (1, N'111222', CAST(0x0000AC6700000000 AS DateTime), 1)
+GO
+INSERT [dbo].[Orders] ([Id], [OrderNumber], [OrderDate], [Customer_Id]) VALUES (2, N'111333', CAST(0x0000AC6800000000 AS DateTime), 1)
+GO
+SET IDENTITY_INSERT [dbo].[Orders] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Products] ON 
+
+GO
+INSERT [dbo].[Products] ([Id], [Name], [Description], [ItemCount], [ItemPrice], [AvailabilityStatus], [ProductTypeId], [EntryDate], [UpdateDate]) VALUES (13, N'Laptop', N'Laptop', 35, 2500.0000, 1, 1, CAST(0x0000AC67016C6F6A AS DateTime), NULL)
+GO
+INSERT [dbo].[Products] ([Id], [Name], [Description], [ItemCount], [ItemPrice], [AvailabilityStatus], [ProductTypeId], [EntryDate], [UpdateDate]) VALUES (14, N'Mobile', N'Mobile phone', 4500, 3000.0000, 1, 1, CAST(0x0000AC67016C8796 AS DateTime), NULL)
+GO
+INSERT [dbo].[Products] ([Id], [Name], [Description], [ItemCount], [ItemPrice], [AvailabilityStatus], [ProductTypeId], [EntryDate], [UpdateDate]) VALUES (16, N'Shirt', N'Shirt', 25, 2500.0000, 1, 2, CAST(0x0000AC6800957E45 AS DateTime), CAST(0x0000AC680096527A AS DateTime))
+GO
+INSERT [dbo].[Products] ([Id], [Name], [Description], [ItemCount], [ItemPrice], [AvailabilityStatus], [ProductTypeId], [EntryDate], [UpdateDate]) VALUES (17, N'pant3', N'cotton', 23, 22.0000, 1, 2, CAST(0x0000AC680097E2DC AS DateTime), CAST(0x0000AC68009B5D38 AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[Products] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ProductsType] ON 
+
+GO
+INSERT [dbo].[ProductsType] ([Id], [Name], [Description], [EntryDate]) VALUES (1, N'Electronics', N'Electronics', CAST(0x0000AC660140C60A AS DateTime))
+GO
+INSERT [dbo].[ProductsType] ([Id], [Name], [Description], [EntryDate]) VALUES (2, N'Beauty', N'Beauty', CAST(0x0000AC660140EA5A AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[ProductsType] OFF
+GO
+ALTER TABLE [dbo].[Products] ADD  CONSTRAINT [DF_Products_AvailabilityStatus]  DEFAULT ((1)) FOR [AvailabilityStatus]
+GO
+ALTER TABLE [dbo].[Products] ADD  CONSTRAINT [DF_Products_EntryDate]  DEFAULT (getdate()) FOR [EntryDate]
+GO
+ALTER TABLE [dbo].[ProductsType] ADD  CONSTRAINT [DF_ProductsType_EntryDate]  DEFAULT (getdate()) FOR [EntryDate]
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD  CONSTRAINT [FK_OrderDetails_Orders] FOREIGN KEY([OrderId])
+REFERENCES [dbo].[Orders] ([Id])
+GO
+ALTER TABLE [dbo].[OrderDetails] CHECK CONSTRAINT [FK_OrderDetails_Orders]
+GO
+ALTER TABLE [dbo].[OrderDetails]  WITH CHECK ADD  CONSTRAINT [FK_OrderDetails_Products] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[Products] ([Id])
+GO
+ALTER TABLE [dbo].[OrderDetails] CHECK CONSTRAINT [FK_OrderDetails_Products]
+GO
+ALTER TABLE [dbo].[Orders]  WITH CHECK ADD  CONSTRAINT [FK_Orders_Customers] FOREIGN KEY([Customer_Id])
+REFERENCES [dbo].[Customers] ([Id])
+GO
+ALTER TABLE [dbo].[Orders] CHECK CONSTRAINT [FK_Orders_Customers]
+GO
+ALTER TABLE [dbo].[Products]  WITH CHECK ADD  CONSTRAINT [FK_Products_ProductsType] FOREIGN KEY([ProductTypeId])
+REFERENCES [dbo].[ProductsType] ([Id])
+GO
+ALTER TABLE [dbo].[Products] CHECK CONSTRAINT [FK_Products_ProductsType]
+GO
+USE [master]
+GO
+ALTER DATABASE [SahabDB] SET  READ_WRITE 
+GO

@@ -1,0 +1,71 @@
+﻿
+@model Sahaab.Models.ProductViewModel
+    
+<table class="table">
+    <tr>
+        <th>
+            Product Name
+        </th>
+        <th>
+            Descriprtion
+        </th>
+        <th>
+            Count
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            Product Type
+        </th>
+        <th>
+            Product Availibility
+        </th>
+        <th>
+            Manage
+        </th>
+
+        <th></th>
+    </tr>
+    @if (Model.ProductList != null && Model.ProductList.Count > 0)
+    {
+        foreach (var item in Model.ProductList)
+        {
+    <tr>
+        <td>
+            @item.Name
+        </td>
+        <td>
+            @item.Description
+        </td>
+        <td>
+            @item.ItemCount
+        </td>
+        <td>
+            @item.ItemPrice
+        </td>
+        <td>
+            @item.ProductTypeName
+        </td>
+        @if (item.AvailabilityStatus == true)
+        {
+            <td>Yes</td>
+        }
+        else
+        {
+            <td>No</td>
+        }
+
+
+        
+        <td>
+           
+            <input type="button" class="btn btn-danger" value="Delete" onclick="Delete(@item.Id)" />
+            <input type="button" class="btn btn-danger" value="Details" onclick="Details(@item.Id)" />
+
+        </td>
+    </tr>
+        }
+    }
+
+</table>
